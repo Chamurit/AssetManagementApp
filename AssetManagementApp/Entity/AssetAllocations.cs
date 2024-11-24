@@ -6,23 +6,57 @@ using System.Threading.Tasks;
 
 namespace AssetManagementApp.Entity
 {
-    public class AssetAllocations
+    public class Asset_Allocations
     {
-        public int AllocationId { get; set; }
-        public int AssetId { get; set; }
-        public int EmployeeId { get; set; }
-        public DateTime AllocationDate { get; set; }
-        public DateTime? ReturnDate { get; set; }
+        // Private variables
+        private int allocationID;
+        private int assetID;
+        private int employeeID;
+        private DateTime allocationDate;
+        private DateTime returnDate;
 
-        public AssetAllocations() { }
+        // Default constructor
+        public Asset_Allocations() { }
 
-        public AssetAllocations(int allocationId, int assetId, int employeeId, DateTime allocationDate, DateTime? returnDate)
+        // Parameterized constructor
+        public Asset_Allocations(int allocationID, int assetID, int employeeID, DateTime allocationDate, DateTime returnDate)
         {
-            AllocationId = allocationId;
-            AssetId = assetId;
-            EmployeeId = employeeId;
-            AllocationDate = allocationDate;
-            ReturnDate = returnDate;
+            this.allocationID = allocationID;
+            this.assetID = assetID;
+            this.employeeID = employeeID;
+            this.allocationDate = allocationDate;
+            this.returnDate = returnDate;
+        }
+
+        // Getter and Setter methods
+        public int AllocationID
+        {
+            get { return allocationID; }
+            set { allocationID = value; }
+        }
+
+        public int AssetID
+        {
+            get { return assetID; }
+            set { assetID = value; }
+        }
+
+        public int EmployeeID
+        {
+            get { return employeeID; }
+            set { employeeID = value; }
+        }
+
+        public DateTime AllocationDate
+        {
+            get { return allocationDate; }
+            set { allocationDate = value; }
+        }
+
+        public DateTime ReturnDate
+        {
+            get { return returnDate; }
+            set { returnDate = value; }
         }
     }
 }

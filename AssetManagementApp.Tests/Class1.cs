@@ -24,14 +24,14 @@ namespace AssetManagementApp.Tests
                 //Arrange
                 Assets newAsset = new Assets
                 {
-                    AssetId = 5,
+                    AssetID = 5,
                     Names = "Samsung",
                     Type = "Tv",
-                    SerialNumber = "147853",
+                    SerialNumber = 147853,
                     PurchaseDate = new DateTime(2024, 3, 15),
                     Locations = "Office Chennai",
                     Status = "Available",
-                    OwnerId = 4
+                    OwnerID = 4
                 };
                 //Act
                 bool result = _service.AddAsset(newAsset);

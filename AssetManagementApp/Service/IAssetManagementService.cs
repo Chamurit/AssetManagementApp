@@ -17,5 +17,6 @@ namespace AssetManagementApp.Service
         bool PerformMaintenance(int assetId, DateTime maintenanceDate, string description, double cost);
         bool ReserveAsset(int assetId, int employeeId, DateTime reservationDate, DateTime startDate, DateTime endDate);
         bool WithdrawReservation(int reservationId);
+        List<Assets> GetAllAsset();
     }
 }

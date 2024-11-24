@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace AssetManagementApp.Exception
 {
-
     public class AssetNotFoundException : System.Exception
     {
         public AssetNotFoundException()
@@ -18,5 +17,6 @@ namespace AssetManagementApp.Exception
         public AssetNotFoundException(string message, IOException innerException) : base(message, innerException) { }
 
     }
+
 }
 

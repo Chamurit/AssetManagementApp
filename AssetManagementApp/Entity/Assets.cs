@@ -9,27 +9,81 @@ namespace AssetManagementApp.Entity
 
     public class Assets
     {
-        public int AssetId { get; set; }
-        public string Names { get; set; }
-        public string Type { get; set; }
-        public string SerialNumber { get; set; }
-        public DateTime PurchaseDate { get; set; }
-        public string Locations { get; set; }
-        public string Status { get; set; }
-        public int OwnerId { get; set; }
+        // Private variables
+        private int assetID;
+        private string names;
+        private string type;
+        private int serialNumber;
+        private DateTime purchaseDate;
+        private string locations;
+        private string status;
+        private int ownerID;
 
+        // Default constructor
         public Assets() { }
 
-        public Assets(int assetId, string name, string type, string serialNumber, DateTime purchaseDate, string location, string status, int ownerId)
+        // Parameterized constructor
+        public Assets(int assetID, string name, string type, int serialNumber, DateTime purchaseDate, string location, string status, int ownerID)
         {
-            AssetId = assetId;
-            Names = name;
-            Type = type;
-            SerialNumber = serialNumber;
-            PurchaseDate = purchaseDate;
-            Locations = location;
-            Status = status;
-            OwnerId = ownerId;
+            this.assetID = assetID;
+            this.names = name;
+            this.type = type;
+            this.serialNumber = serialNumber;
+            this.purchaseDate = purchaseDate;
+            this.locations = location;
+            this.status = status;
+            this.ownerID = ownerID;
         }
+
+        // Getter and Setter methods
+        public int AssetID
+        {
+            get { return assetID; }
+            set { assetID = value; }
+        }
+
+        public string Names
+        {
+            get { return names; }
+            set { names = value; }
+        }
+
+        public string Type
+        {
+            get { return type; }
+            set { type = value; }
+        }
+
+        public int SerialNumber
+        {
+            get { return serialNumber; }
+            set { serialNumber = value; }
+        }
+
+        public DateTime PurchaseDate
+        {
+            get { return purchaseDate; }
+            set { purchaseDate = value; }
+        }
+
+        public string Locations
+        {
+            get { return locations; }
+            set { locations = value; }
+        }
+
+        public string Status
+        {
+            get { return status; }
+            set { status = value; }
+        }
+
+        public int OwnerID
+        {
+            get { return ownerID; }
+            set { ownerID = value; }
+        }
+
+       
     }
 }

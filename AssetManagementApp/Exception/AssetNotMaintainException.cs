@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AssetManagementApp.Exception
 {
 
-    public class AssetNotMaintainException : IOException
+    public class AssetNotMaintainException : SystemException
     {
         public AssetNotMaintainException(string message) : base(message) { }
     }

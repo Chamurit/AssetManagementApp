@@ -2,8 +2,10 @@
 
 using AssetManagementApp.Entity;
 using AssetManagementApp.Exception;
+using AssetManagementApp.Utility;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,98 +14,219 @@ namespace AssetManagementApp.Service
 {
     public class AssetManagementServiceImpl : IAssetManagementService
     {
-        private List<Assets> assets = new List<Assets>();
-        private List<AssetAllocations> allocations = new List<AssetAllocations>();
-        private List<MaintenanceRecords> maintenanceRecords = new List<MaintenanceRecords>();
-        private List<Reservation> reservations = new List<Reservation>();
-        // private readonly Dictionary<int, Assets> assetDatabase = new Dictionary<int, Assets>();
+        string connectionString;
+        private readonly object Command;
+        SqlCommand command = null;
+
+        // Constructor to initialize the database connection string
+        public AssetManagementServiceImpl()
+        {
+            connectionString = DBPropertyUtil.GetConnectionString();
+            command = new SqlCommand(connectionString);
+        }
+
+        public List<Assets> GetAllAsset()
+        {
+            List<Assets> asset = new List<Assets>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM ASSETS";
+                SqlCommand command = new SqlCommand(query, connection);
+                {
+                    connection.Open();
+                    using SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        Assets assets = new Assets();
+
+                        assets.AssetID = (int)reader["AssetID"];
+                        assets.Names = (string)reader["Names"];
+                        assets.Type = (string)reader["Type"];
+                        assets.SerialNumber = (int)reader["SerialNumber"];
+                        assets.PurchaseDate = (DateTime)reader["PurchaseDate"];
+                        assets.Locations = (string)reader["Locations"];
+                        assets.Status = (string)reader["Status"];
+                        assets.OwnerID = (int)reader["OwnerID"];
+                        asset.Add(assets);
+                    }
+
+
+                }
+            }
+            return asset;
+        }
+
         public bool AddAsset(Assets asset)
         {
-            assets.Add(asset);
-            return true;
+            string query = "INSERT INTO Assets VALUES (@Names, @Type, @SerialNumber, @PurchaseDate, @Locations, @Status, @OwnerID)";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Names", asset.Names);
+                command.Parameters.AddWithValue("@Type", asset.Type);
+                command.Parameters.AddWithValue("@SerialNumber", asset.SerialNumber);
+                command.Parameters.AddWithValue("@PurchaseDate", asset.PurchaseDate);
+                command.Parameters.AddWithValue("@Locations", asset.Locations);
+                command.Parameters.AddWithValue("@Status", asset.Status);
+                command.Parameters.AddWithValue("@OwnerID", asset.OwnerID);
+
+                connection.Open();
+                return command.ExecuteNonQuery() > 0;
+            }
         }
 
         public bool UpdateAsset(Assets asset)
         {
-            var existingAsset = assets.Find(a => a.AssetId == asset.AssetId);
-            if (existingAsset != null)
+            string query = "UPDATE Assets SET SerialNumber = @SerialNumber WHERE AssetID = @AssetID";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
             {
-                existingAsset.Names = asset.Names;
-                existingAsset.Type = asset.Type;
-                existingAsset.SerialNumber = asset.SerialNumber;
-                existingAsset.PurchaseDate = asset.PurchaseDate;
-                existingAsset.Locations = asset.Locations;
-                existingAsset.Status = asset.Status;
-                existingAsset.OwnerId = asset.OwnerId;
+                command.Parameters.AddWithValue("@AssetID", asset.AssetID);
+                command.Parameters.AddWithValue("@SerialNumber", asset.SerialNumber);
+
+
+                connection.Open();
+                int rowsaffected = command.ExecuteNonQuery();
+
                 return true;
             }
-            return false;
         }
 
-        public bool DeleteAsset(int assetId)
+        public bool DeleteAsset(int assetid)
         {
-            var asset = assets.Find(a => a.AssetId == assetId);
-            if (asset != null)
+            string query = "delete from Assets where AssetID = @AssetID";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+
             {
-                assets.Remove(asset);
+                command.Parameters.AddWithValue("@Assetid", assetid);
+
+                connection.Open();
+                int rowsaffected = command.ExecuteNonQuery();
+                if (rowsaffected == 0)
+                {
+                    throw new AssetNotFoundException($"Asset with ID::{assetid} not found in database");
+                }
                 return true;
             }
-            return false;
         }
+
 
         public bool AllocateAsset(int assetId, int employeeId, DateTime allocationDate)
         {
-            var asset = assets.Find(a => a.AssetId == assetId);
-            if (asset != null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                allocations.Add(new AssetAllocations(allocations.Count + 1, assetId, employeeId, allocationDate, null));
-                return true;
-            }
-            throw new AssetNotFoundException("Asset not found.");
-        }
+                string query = @"INSERT INTO Asset_Allocations (AssetId, EmployeeId, AllocationDate) 
+                                 VALUES (@AssetId, @EmployeeId, @AllocationDate)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
 
+                    command.Parameters.AddWithValue("@AssetId", assetId);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    command.Parameters.AddWithValue("@AllocationDate", allocationDate);
+
+
+                    connection.Open();
+                    int rowsAffected = command.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
         public bool DeallocateAsset(int assetId, int employeeId, DateTime returnDate)
         {
-            var allocation = allocations.Find(a => a.AssetId == assetId && a.EmployeeId == employeeId && a.ReturnDate == null);
-            if (allocation != null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                allocation.ReturnDate = returnDate;
-                return true;
-            }
-            throw new AssetNotFoundException("Allocation not found.");
-        }
+                string query = @"UPDATE Asset_Allocations
+                                 SET ReturnDate = @ReturnDate 
+                                 WHERE AssetId = @AssetId AND EmployeeId = @EmployeeId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@AssetId", assetId);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    command.Parameters.AddWithValue("@ReturnDate", returnDate);
 
+                    connection.Open();
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                    {
+                        throw new AssetNotFoundException($"Asset with ID::{assetId} not found in database");
+                    }
+                    return rowsAffected > 0;
+                }
+            }
+        }
         public bool PerformMaintenance(int assetId, DateTime maintenanceDate, string description, double cost)
         {
-            var asset = assets.Find(a => a.AssetId == assetId);
-            if (asset != null)
-            {
-                maintenanceRecords.Add(new MaintenanceRecords(maintenanceRecords.Count + 1, assetId, maintenanceDate, description, cost));
-                return true;
-            }
-            throw new AssetNotFoundException("Asset not found.");
-        }
 
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = @"INSERT INTO Maintenance_Records (AssetId, MaintenanceDate, Description, Cost) 
+                                 VALUES (@AssetId, @MaintenanceDate, @Description, @Cost)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+
+                    command.Parameters.AddWithValue("@AssetId", assetId);
+                    command.Parameters.AddWithValue("@MaintenanceDate", maintenanceDate);
+                    command.Parameters.AddWithValue("@Description", description);
+                    command.Parameters.AddWithValue("@Cost", cost);
+
+                    connection.Open();
+                    int rowsAffected = command.ExecuteNonQuery();
+
+
+
+                    if ((DateTime.Now - maintenanceDate).TotalDays > 730)
+                    {
+                        throw new AssetNotMaintainException($"Asset with ID::{assetId} has not been maintained for over 2 years");
+                    }
+                    return rowsAffected > 0;
+                }
+            }
+
+        }
         public bool ReserveAsset(int assetId, int employeeId, DateTime reservationDate, DateTime startDate, DateTime endDate)
         {
-            var asset = assets.Find(a => a.AssetId == assetId);
-            if (asset != null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                reservations.Add(new Reservation(reservations.Count + 1, assetId, employeeId, reservationDate, startDate, endDate, "Pending"));
-                return true;
-            }
-            throw new AssetNotFoundException("Asset not found.");
-        }
+                string query = @"INSERT INTO Reservations (AssetId, EmployeeId, ReservationDate, StartDate, EndDate) 
+                                 VALUES (@AssetId, @EmployeeId, @ReservationDate, @StartDate, @EndDate)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@AssetId", assetId);
+                    command.Parameters.AddWithValue("@EmployeeId", employeeId);
+                    command.Parameters.AddWithValue("@ReservationDate", reservationDate);
+                    command.Parameters.AddWithValue("@StartDate", startDate);
+                    command.Parameters.AddWithValue("@EndDate", endDate);
 
+                    connection.Open();
+                    int rowsAffected = command.ExecuteNonQuery();
+
+                    return rowsAffected > 0;
+                }
+            }
+        }
         public bool WithdrawReservation(int reservationId)
         {
-            var reservation = reservations.Find(r => r.ReservationId == reservationId);
-            if (reservation != null)
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                reservations.Remove(reservation);
-                return true;
+                string query = @"DELETE FROM Reservations WHERE ReservationId = @ReservationId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ReservationId", reservationId);
+
+                    connection.Open();
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                    {
+                        throw new AssetNotFoundException($"Asset with ReservationID::{reservationId} not found in database");
+                    }
+
+                    return rowsAffected > 0;
+
+                }
             }
-            throw new AssetNotFoundException("Reservation not found.");
         }
+
     }
 }

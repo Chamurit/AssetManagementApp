@@ -7,27 +7,73 @@ using System.Threading.Tasks;
 namespace AssetManagementApp.Entity
 {
 
-    public class Reservation
+    public class Reservations
     {
-        public int ReservationId { get; set; }
-        public int AssetId { get; set; }
-        public int EmployeeId { get; set; }
-        public DateTime ReservationDate { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public string Status { get; set; }
+        // Private variables
+        private int reservationID;
+        private int assetID;
+        private int employeeID;
+        private DateTime reservationDate;
+        private DateTime startDate;
+        private DateTime endDate;
+        private string status;
 
-        public Reservation() { }
+        // Default constructor
+        public Reservations() { }
 
-        public Reservation(int reservationId, int assetId, int employeeId, DateTime reservationDate, DateTime startDate, DateTime endDate, string status)
+        // Parameterized constructor
+        public Reservations(int reservationID, int assetID, int employeeID, DateTime reservationDate, DateTime startDate, DateTime endDate, string status)
         {
-            ReservationId = reservationId;
-            AssetId = assetId;
-            EmployeeId = employeeId;
-            ReservationDate = reservationDate;
-            StartDate = startDate;
-            EndDate = endDate;
-            Status = status;
+            this.reservationID = reservationID;
+            this.assetID = assetID;
+            this.employeeID = employeeID;
+            this.reservationDate = reservationDate;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.status = status;
+        }
+
+        // Getter and Setter methods
+        public int ReservationID
+        {
+            get { return reservationID; }
+            set { reservationID = value; }
+        }
+
+        public int AssetID
+        {
+            get { return assetID; }
+            set { assetID = value; }
+        }
+
+        public int EmployeeID
+        {
+            get { return employeeID; }
+            set { employeeID = value; }
+        }
+
+        public DateTime ReservationDate
+        {
+            get { return reservationDate; }
+            set { reservationDate = value; }
+        }
+
+        public DateTime StartDate
+        {
+            get { return startDate; }
+            set { startDate = value; }
+        }
+
+        public DateTime EndDate
+        {
+            get { return endDate; }
+            set { endDate = value; }
+        }
+
+        public string Status
+        {
+            get { return status; }
+            set { status = value; }
         }
     }
 }

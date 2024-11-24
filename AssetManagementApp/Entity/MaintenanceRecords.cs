@@ -6,24 +6,58 @@ using System.Threading.Tasks;
 
 namespace AssetManagementApp.Entity
 {
-
-    public class MaintenanceRecords
+    public class Maintenance_records
     {
-        public int MaintenanceId { get; set; }
-        public int AssetId { get; set; }
-        public DateTime MaintenanceDate { get; set; }
-        public string Description { get; set; }
-        public double Cost { get; set; }
+        // Private variables
+        private int maintenanceID;
+        private int assetID;
+        private DateTime maintenanceDate;
+        private string description;
+        private double cost;
 
-        public MaintenanceRecords() { }
+        // Default constructor
+        public Maintenance_records() { }
 
-        public MaintenanceRecords(int maintenanceId, int assetId, DateTime maintenanceDate, string description, double cost)
+        // Parameterized constructor
+        public Maintenance_records(int maintenanceID, int assetID, DateTime maintenanceDate, string description, double cost)
         {
-            MaintenanceId = maintenanceId;
-            AssetId = assetId;
-            MaintenanceDate = maintenanceDate;
-            Description = description;
-            Cost = cost;
+            this.maintenanceID = maintenanceID;
+            this.assetID = assetID;
+            this.maintenanceDate = maintenanceDate;
+            this.description = description;
+            this.cost = cost;
+        }
+
+        // Getter and Setter methods
+        public int MaintenanceID
+        {
+            get { return maintenanceID; }
+            set { maintenanceID = value; }
+        }
+
+        public int AssetID
+        {
+            get { return assetID; }
+            set { assetID = value; }
+        }
+
+        public DateTime MaintenanceDate
+        {
+            get { return maintenanceDate; }
+            set { maintenanceDate = value; }
+        }
+
+        public string Description
+        {
+            get { return description; }
+            set { description = value; }
+        }
+
+        public double Cost
+        {
+            get { return cost; }
+            set { cost = value; }
         }
     }
+
 }
